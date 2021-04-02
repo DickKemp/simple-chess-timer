@@ -17,6 +17,7 @@ import Html.Events exposing (onClick)
 import Time
 
 
+main : Program () Model Msg
 main =
     Browser.element { init = init, subscriptions = subscriptions, update = update, view = view }
 
@@ -31,10 +32,12 @@ type Player
     | Neither
 
 
+startTimeDefault : number
 startTimeDefault =
     300
 
 
+deltaTime : number
 deltaTime =
     30
 
@@ -65,13 +68,13 @@ type Msg
     | SheStops
 
 
+lostTime : number -> number
 lostTime t =
     if t <= 0 then
         0
 
     else
         t
-
 
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
@@ -111,7 +114,7 @@ update msg model =
 
 
 subscriptions : Model -> Sub Msg
-subscriptions model =
+subscriptions _ =
     Time.every 1000 Tick
 
 
@@ -119,6 +122,7 @@ subscriptions model =
 -- VIEW
 
 
+activeBtnColor : b -> b -> String
 activeBtnColor currPlayer isThisPerson =
     if currPlayer == isThisPerson then
         "yellow"
@@ -127,6 +131,7 @@ activeBtnColor currPlayer isThisPerson =
         "white"
 
 
+btnColor : { a | hisTime : number, herTime : number, currentPlayer : Player } -> Player -> String
 btnColor m isThisPerson =
     if getTimeForPlayer m isThisPerson == 0 then
         "red"
@@ -135,10 +140,12 @@ btnColor m isThisPerson =
         activeBtnColor m.currentPlayer isThisPerson
 
 
+minsec : Int -> String
 minsec seconds =
     String.padLeft 2 '0' (String.fromInt (seconds // 60)) ++ ":" ++ String.padLeft 2 '0' (String.fromInt (remainderBy 60 seconds))
 
 
+getTimeForPlayer : { a | hisTime : number, herTime : number } -> Player -> number
 getTimeForPlayer model player =
     case player of
         He ->
